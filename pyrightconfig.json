@@ -1,0 +1,11 @@
+{
+    "venvPath": ".",
+    "venv": ".venv",
+    "pythonVersion": "3.10",
+    "pythonPlatform": "Windows",
+    "reportMissingImports": "warning",
+    "reportMissingModuleSource": "none",
+    "reportAttributeAccessIssue": "warning",
+    "reportOptionalMemberAccess": "warning",
+    "reportIncompatibleMethodOverride": "none"
+}
