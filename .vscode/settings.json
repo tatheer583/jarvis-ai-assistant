@@ -1,5 +1,5 @@
 {
-    "python.analysis.autoImportCompletions": false,
+    "python.analysis.autoImportCompletions": true,
     "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
     "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
     "python.analysis.extraPaths": [

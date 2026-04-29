@@ -193,7 +193,11 @@ def _start_image_generation(query: str) -> None:
 
     payload = f"{clean_query},True"
     for signal_path in IMAGE_SIGNAL_PATHS:
-        signal_path.write_text(payload, encoding="utf-8")
+        try:
+            signal_path.parent.mkdir(parents=True, exist_ok=True)
+            signal_path.write_text(payload, encoding="utf-8")
+        except Exception as error:
+            log.error("Failed to write image signal file %s: %s", signal_path, error)
 
     try:
         process = subprocess.Popen(
@@ -242,6 +246,7 @@ def MainExecution() -> bool:
         task_execution = False
         image_execution = False
         image_generation_query = ""
+        automation_result = None
 
         SetAssistantStatus("Listening...")
         try:
@@ -297,13 +302,20 @@ def MainExecution() -> bool:
         for current_query in decision:
             if not task_execution and any(current_query.startswith(func) for func in Functions):
                 try:
-                    asyncio.run(
+                    automation_result = asyncio.run(
                         asyncio.wait_for(
                             Automation(decision),
                             timeout=AUTOMATION_TIMEOUT_SECONDS,
                         )
                     )
-                    task_execution = True
+                    task_execution = bool(automation_result and automation_result.success)
+                    if automation_result is not None:
+                        log.info(
+                            "Automation result: success=%s, partial_failure=%s, message=%s",
+                            automation_result.success,
+                            automation_result.data.get("partial_failure") if automation_result.data else False,
+                            automation_result.message,
+                        )
                 except asyncio.TimeoutError:
                     log.error("Automation timed out after %ds", AUTOMATION_TIMEOUT_SECONDS)
                 except Exception as error:
@@ -339,7 +351,15 @@ def MainExecution() -> bool:
                 return True
 
         if image_execution and task_execution:
-            answer = "Done. I also started generating the image for you."
+            if automation_result:
+                if automation_result.data and automation_result.data.get("partial_failure"):
+                    answer = (
+                        f"{automation_result.message} I also started generating the image for you."
+                    )
+                else:
+                    answer = f"{automation_result.message} I also started generating the image for you."
+            else:
+                answer = "Done. I also started generating the image for you."
             _record_local_exchange(query, answer)
             _speak_and_display_answer(answer)
             return True
@@ -350,8 +370,24 @@ def MainExecution() -> bool:
             _speak_and_display_answer(answer)
             return True
 
+        if automation_result is not None and not task_execution:
+            if automation_result.data and automation_result.data.get("partial_failure"):
+                answer = (
+                    f"I completed some parts of the task, but some actions failed: {automation_result.message}"
+                )
+            else:
+                answer = automation_result.message or "I attempted the task but could not complete it."
+            _record_local_exchange(query, answer)
+            _speak_and_display_answer(answer)
+            return True
+
         if task_execution:
-            answer = "Done."
+            if automation_result and automation_result.data and automation_result.data.get("partial_failure"):
+                answer = (
+                    f"I completed most of the task, but there were partial failures: {automation_result.message}"
+                )
+            else:
+                answer = automation_result.message if automation_result else "Done."
             _record_local_exchange(query, answer)
             _speak_and_display_answer(answer)
             return True

@@ -1,3 +1,16 @@
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/tatheer583/jarvis-ai-assistant?style=social" alt="GitHub stars">
+  <img src="https://img.shields.io/github/forks/tatheer583/jarvis-ai-assistant?style=social" alt="GitHub forks">
+  <img src="https://img.shields.io/github/license/tatheer583/jarvis-ai-assistant" alt="License">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-blue.svg" alt="Python Version">
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/tatheer583/jarvis-ai-assistant/main/Data/jarvis_banner.png" alt="Jarvis AI Banner" width="600">
+</p>
+
 # Jarvis AI Assistant
 
 A comprehensive, AI-powered personal assistant framework designed to streamline workflows through intelligent automation, natural language processing, and multi-modal interactions.

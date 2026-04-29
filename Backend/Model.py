@@ -146,7 +146,18 @@ User query:
 Response:
 open whatsapp, send message imran we will go to bazar tomorrow
 ---
-14. EXIT COMMAND
+14. WHATSAPP / SEND MESSAGE
+Respond with:
+send message (contact_name) (message text)
+Use this when the user wants to send a message to someone on WhatsApp or any messaging platform.
+Examples:
+"send a message to imran that tomorrow we will go to bazar" → send message imran tomorrow we will go to bazar
+"whatsapp ali hello how are you" → send message ali hello how are you
+"tell imran on whatsapp that meeting is at 5pm" → send message imran meeting is at 5pm
+"message ahmed that I will be late" → send message ahmed I will be late
+Do NOT classify conversational requests like "tell me about jarvis" as a send message task.
+---
+15. EXIT COMMAND
 If the user wants to end the conversation, respond with:
 exit
 Examples:
@@ -276,8 +287,11 @@ def _classify_single_command(command: str) -> str:
         cleaned = re.sub(r"^(write|draft|create content|content)\s*", "", command, flags=re.IGNORECASE).strip()
         return f"content {cleaned or command}"
 
+    if lowered.startswith("tell me ") or lowered.startswith("tell us ") or lowered.startswith("tell him ") or lowered.startswith("tell her ") or lowered.startswith("tell them "):
+        return f"general ({command})"
+
     message_match = re.match(
-        r"^(?:send (?:a )?message to|message|whatsapp|tell)\s+([^\s]+)\s+(?:on whatsapp\s+)?(?:that\s+)?(.+)$",
+        r"^(?:send (?:a )?message to|message|whatsapp|tell)\s+([A-Za-z][A-Za-z0-9_-]*)\s+(?:on whatsapp\s+)?(?:that\s+)?(.+)$",
         command,
         flags=re.IGNORECASE,
     )
@@ -306,6 +320,19 @@ def _fallback_dmm(prompt: str) -> list[str]:
     if not tasks:
         return [f"general ({prompt})"]
     return tasks
+
+
+def _is_invalid_send_message_task(task: str) -> bool:
+    if not task.startswith("send message "):
+        return False
+    parts = task.split(maxsplit=3)
+    if len(parts) < 3:
+        return True
+    contact = parts[2].lower()
+    return contact in {
+        "me", "you", "him", "her", "them", "us", "my", "your", "their",
+        "myself", "yourself", "himself", "herself", "themself",
+    }
 
 
 def _is_direct_command(tasks: list[str]) -> bool:
@@ -359,7 +386,7 @@ def FirstlayerDMM(prompt: str = "test") -> list[str]:
         filtered: list[str] = []
         for task in parts:
             for func in funcs:
-                if task.startswith(func):
+                if task.startswith(func) and not _is_invalid_send_message_task(task):
                     filtered.append(task)
 
         return filtered or local_result

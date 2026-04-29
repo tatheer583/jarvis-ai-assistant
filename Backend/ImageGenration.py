@@ -40,8 +40,12 @@ def open_images(prompt: str) -> None:
 
 
 def _reset_signal_files() -> None:
+    SIGNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
     for path in (SIGNAL_PATH, SIGNAL_PATH_ALT):
-        path.write_text("False,False", encoding="utf-8")
+        try:
+            path.write_text("False,False", encoding="utf-8")
+        except Exception as error:
+            print(f"Failed to reset signal file {path}: {error}")
 
 
 def _extract_error(response: requests.Response) -> str:
@@ -113,13 +117,25 @@ def GenerateImages(prompt: str) -> bool:
 def wait_for_signal() -> None:
     while True:
         try:
-            signal_file = SIGNAL_PATH if SIGNAL_PATH.exists() else SIGNAL_PATH_ALT
+            if SIGNAL_PATH.exists():
+                signal_file = SIGNAL_PATH
+            elif SIGNAL_PATH_ALT.exists():
+                signal_file = SIGNAL_PATH_ALT
+            else:
+                _reset_signal_files()
+                sleep(1)
+                continue
+
             data = signal_file.read_text(encoding="utf-8").strip()
+            if not data or "," not in data:
+                _reset_signal_files()
+                sleep(1)
+                continue
 
             prompt, status = data.split(",", maxsplit=1)
 
             if status.strip() == "True":
-                print("GenerateImages...")
+                print(f"GenerateImages triggered by {signal_file}: {prompt}")
                 try:
                     GenerateImages(prompt=prompt.strip())
                 finally:
