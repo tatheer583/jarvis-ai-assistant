@@ -1,52 +1,129 @@
 # Jarvis AI Assistant
 
-Jarvis is an AI-powered assistant that integrates various functionalities including chatbot interactions, image generation, speech-to-text, text-to-speech, browser automation, and more.
+A comprehensive, AI-powered personal assistant framework designed to streamline workflows through intelligent automation, natural language processing, and multi-modal interactions.
 
-## Features
+## Overview
 
-- **Chatbot**: Engage in conversational AI interactions.
-- **Image Generation**: Generate images based on prompts.
-- **Speech-to-Text**: Convert spoken language to text.
-- **Text-to-Speech**: Convert text to spoken language.
-- **Browser Automation**: Automate web browsing tasks.
-- **Realtime Search**: Perform real-time web searches.
-- **Remote Access**: Enable remote access capabilities.
-- **Language Management**: Handle multiple languages.
-- **Automation**: General automation tasks.
+Jarvis integrates cutting-edge AI technologies to provide a unified platform for conversational AI, content generation, real-time information retrieval, browser automation, and speech processing. Built with a modular architecture for extensibility and maintainability.
+
+## Key Features
+
+- **Conversational AI**: Intelligent chatbot powered by advanced language models with context-aware responses
+- **Generative AI**: AI-driven image generation from textual descriptions
+- **Voice Processing**: 
+  - Speech-to-Text: Convert audio input to text with high accuracy
+  - Text-to-Speech: Natural-sounding speech synthesis
+- **Web Intelligence**: Real-time search engine integration for current information retrieval
+- **Browser Automation**: Automate complex web-based workflows and interactions
+- **Remote Access**: Secure remote control capabilities for distributed operations
+- **Multi-Language Support**: Seamless language detection and switching
+- **Task Automation**: General-purpose automation engine for repetitive tasks
+
+## Project Structure
+
+```
+Jarvis/
+├── Backend/           # Core business logic and API implementations
+├── Frontend/          # User interface and visualization components
+├── Data/              # Configuration and data storage
+├── Main.py            # Application entry point
+├── Requirements.txt   # Python dependencies
+└── README.md          # Project documentation
+```
 
 ## Installation
 
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
+- Chrome/Chromium browser (for browser automation features)
+- Microphone access (for speech-to-text functionality)
+
+### Setup Steps
+
 1. Clone the repository:
-   ```
+   ```bash
    git clone <repository-url>
    cd Jarvis
    ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment (recommended):
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate  # On Windows
+   # or
+   source .venv/bin/activate  # On macOS/Linux
    ```
+
+3. Install dependencies:
+   ```bash
    pip install -r Requirements.txt
    ```
 
-3. Run the main application:
-   ```
-   python Main.py
-   ```
+## Getting Started
 
-## Usage
+### Running the Application
+- **GUI Mode** (Recommended for most users):
+  ```bash
+  python Frontend/GUI.py
+  ```
 
-- Launch the GUI from `Frontend/GUI.py` for a graphical interface.
-- Use backend modules for specific functionalities as needed.
+- **CLI Mode** (For developers and automation):
+  ```bash
+  python Main.py
+  ```
 
-## Requirements
+### Using Specific Modules
+Each backend module can be imported and used independently:
+```python
+from Backend.Chatbot import Chatbot
+from Backend.ImageGenration import ImageGenerator
+from Backend.SpeechToText import SpeechToText
+```
 
-See `Requirements.txt` for a list of Python dependencies.
+## Configuration
+
+- Review configuration files in the `Data/` directory
+- Update language preferences in `Backend/LanguageManager.py`
+- Customize automation rules in `Backend/Automation.py`
 
 ## Troubleshooting
 
-- Ensure all dependencies are installed.
-- Check Python version compatibility (recommended: Python 3.8+).
-- For browser automation, ensure Chrome/Chromium is installed.
+| Issue | Solution |
+|-------|----------|
+| Missing dependencies | Run `pip install -r Requirements.txt` and verify installation |
+| Python version error | Ensure Python 3.8+ is installed: `python --version` |
+| Browser automation fails | Install Chrome/Chromium and verify `chromedriver` compatibility |
+| Speech features unavailable | Check microphone/speaker connectivity and permissions |
+| Port conflicts | Modify port settings in configuration files if running remote access |
+
+## Development
+
+### Running Tests
+```bash
+python debug_groq.py
+```
+
+### Code Quality
+- Follow PEP 8 style guidelines
+- Include docstrings for all functions
+- Test new features before submission
 
 ## Contributing
 
-Feel free to submit issues or pull requests for improvements.
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/improvement`)
+3. Commit your changes (`git commit -am 'Add improvement'`)
+4. Push to the branch (`git push origin feature/improvement`)
+5. Submit a Pull Request
+
+## License
+
+[Add your license information here]
+
+## Support
+
+For issues, feature requests, or questions:
+- Open an issue on the GitHub repository
+- Check existing documentation in the `Data/` directory
