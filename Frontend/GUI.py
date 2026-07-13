@@ -78,8 +78,15 @@ def GetMicrophoneStatus():
 
 
 def SetAssistantStatus(Status):
-      with open(os.path.join(TempDirPath, "Status.data"), "w", encoding='utf-8') as file:
-            file.write(Status)
+      for _ in range(3):
+            try:
+                  with open(os.path.join(TempDirPath, "Status.data"), "w", encoding='utf-8') as file:
+                        file.write(Status)
+                  return
+            except PermissionError:
+                  import time as _t; _t.sleep(0.05)
+            except Exception:
+                  return
 
 
 def GetAssistantStatus():

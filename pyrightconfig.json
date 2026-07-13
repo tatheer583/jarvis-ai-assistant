@@ -1,6 +1,6 @@
 {
-    "venvPath": ".",
-    "venv": ".venv",
+    "venvPath": "C:\\Users\\1",
+    "venv": "jarvis_venv",
     "pythonVersion": "3.10",
     "pythonPlatform": "Windows",
     "reportMissingImports": "warning",

@@ -18,3 +18,5 @@ gTTS
 PyQt5
 webdriver-manager
 Flask
+SpeechRecognition
+PyAudio

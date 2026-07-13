@@ -11,8 +11,8 @@ from dotenv import dotenv_values
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / ".env"
 DATA_DIR = BASE_DIR / "Data"
-SIGNAL_PATH = BASE_DIR / "Frontend" / "Files" / "ImageGenration.data"
-SIGNAL_PATH_ALT = BASE_DIR / "Frontend" / "Files" / "ImageGeneration.data"
+SIGNAL_PATH = BASE_DIR / "Frontend" / "Files" / "ImageGeneration.data"
+SIGNAL_PATH_ALT = None  # Kept for backward compat only; driver uses IMAGE_SIGNAL_PATHS from Main.py
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 SIGNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
 
@@ -41,11 +41,10 @@ def open_images(prompt: str) -> None:
 
 def _reset_signal_files() -> None:
     SIGNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    for path in (SIGNAL_PATH, SIGNAL_PATH_ALT):
-        try:
-            path.write_text("False,False", encoding="utf-8")
-        except Exception as error:
-            print(f"Failed to reset signal file {path}: {error}")
+    try:
+        SIGNAL_PATH.write_text("False,False", encoding="utf-8")
+    except Exception as error:
+        print(f"Failed to reset signal file {SIGNAL_PATH}: {error}")
 
 
 def _extract_error(response: requests.Response) -> str:
@@ -75,8 +74,12 @@ def _save_image_response(response: requests.Response, prompt: str, index: int) -
     if not content_type.startswith("image/"):
         raise RuntimeError(_extract_error(response))
 
+    content = response.content
+    if len(content) < 2048:
+        raise RuntimeError(f"Response too small ({len(content)} bytes) to be a valid image. Likely an error: {response.text[:300].strip()}")
+
     out_path = DATA_DIR / f"{prompt.replace(' ', '_')}{index}.jpg"
-    out_path.write_bytes(response.content)
+    out_path.write_bytes(content)
     return True
 
 
@@ -117,16 +120,12 @@ def GenerateImages(prompt: str) -> bool:
 def wait_for_signal() -> None:
     while True:
         try:
-            if SIGNAL_PATH.exists():
-                signal_file = SIGNAL_PATH
-            elif SIGNAL_PATH_ALT.exists():
-                signal_file = SIGNAL_PATH_ALT
-            else:
+            if not SIGNAL_PATH.exists():
                 _reset_signal_files()
                 sleep(1)
                 continue
 
-            data = signal_file.read_text(encoding="utf-8").strip()
+            data = SIGNAL_PATH.read_text(encoding="utf-8").strip()
             if not data or "," not in data:
                 _reset_signal_files()
                 sleep(1)
@@ -135,7 +134,7 @@ def wait_for_signal() -> None:
             prompt, status = data.split(",", maxsplit=1)
 
             if status.strip() == "True":
-                print(f"GenerateImages triggered by {signal_file}: {prompt}")
+                print(f"GenerateImages triggered: {prompt}")
                 try:
                     GenerateImages(prompt=prompt.strip())
                 finally:

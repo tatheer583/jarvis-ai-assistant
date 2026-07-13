@@ -65,8 +65,13 @@ WINDOWS_TTS_PROVIDERS = {"windows", "native", "sapi"}
 # Helpers
 # ---------------------------------------------------------------------------
 def SetAssistantStatus(status: str) -> None:
-    with open(TEMP_DIR / "Status.data", "w", encoding="utf-8") as file:
-        file.write(status)
+    for _ in range(3):
+        try:
+            with open(TEMP_DIR / "Status.data", "w", encoding="utf-8") as file:
+                file.write(status)
+            return
+        except PermissionError:
+            time.sleep(0.05)
 
 
 def _ensure_mixer_initialized() -> None:
@@ -277,7 +282,7 @@ def stop_speaking() -> None:
             pygame.mixer.music.stop()
     except Exception:
         pass
-    log.info("stop_speaking() called -- speech interrupted")
+    log.debug("stop_speaking() called -- speech interrupted")
 
 
 def is_speaking() -> bool:

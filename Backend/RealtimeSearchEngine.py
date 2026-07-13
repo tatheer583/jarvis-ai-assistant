@@ -225,7 +225,7 @@ def RealtimeSearchEngine(query: str) -> str:
     if client is not None:
         try:
             completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 messages=conversation,  # type: ignore
                 max_tokens=512,
                 temperature=0.5,

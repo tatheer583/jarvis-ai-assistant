@@ -208,7 +208,7 @@ def ChatBot(Query: str) -> str:
             conversation = SystemChatBot + [{"role": "system", "content": RealtimeInformation()}] + messages[-20:]
 
             completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 messages=conversation,  # type: ignore
                 max_tokens=2048,
                 temperature=0.7,

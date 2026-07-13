@@ -1,13 +1,1 @@
-{
-    "python.analysis.autoImportCompletions": true,
-    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
-    "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
-    "python.analysis.extraPaths": [
-        "${workspaceFolder}\\.venv\\Lib\\site-packages"
-    ],
-    "python.analysis.typeCheckingMode": "basic",
-    "python.analysis.diagnosticSeverityOverrides": {
-        "reportMissingImports": "warning",
-        "reportMissingModuleSource": "none"
-    }
-}
+{\" "python.defaultInterpreterPath\: \C:\\Users\\1\\jarvis_venv\\Scripts\\python.exe\, \python.terminal.activateEnvironment\: true, \python.analysis.typeCheckingMode\: \basic\} 

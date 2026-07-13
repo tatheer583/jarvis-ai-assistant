@@ -241,7 +241,7 @@ def _content_writer_ai(prompt: str) -> str:
         try:
             conversation = SYSTEM_CHATBOT + messages[-20:] + [{"role": "user", "content": prompt}]
             completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 messages=conversation,  # type: ignore[arg-type]
                 max_tokens=1024,
                 temperature=0.7,

@@ -63,10 +63,7 @@ _last_command_time: float = 0
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 CHAT_LOG_PATH = BASE_DIR / "Data" / "ChatLog.json"
-IMAGE_SIGNAL_PATHS = [
-    BASE_DIR / "Frontend" / "Files" / "ImageGeneration.data",
-    BASE_DIR / "Frontend" / "Files" / "ImageGenration.data",
-]
+IMAGE_SIGNAL_PATH = BASE_DIR / "Frontend" / "Files" / "ImageGeneration.data"
 
 env_vars = dotenv_values(str(ENV_PATH))
 Username = env_vars.get("Username", os.environ.get("USERNAME", "User"))
@@ -94,7 +91,7 @@ def ReadChatLogJson() -> list[dict[str, str]]:
     with _chatlog_lock:
         try:
             with open(CHAT_LOG_PATH, "r", encoding="utf-8") as file:
-                chatlog_data = json.load(file)
+                chatlog_data = json.load(file)  
             if isinstance(chatlog_data, list):
                 return chatlog_data
         except (FileNotFoundError, json.JSONDecodeError):
@@ -192,12 +189,11 @@ def _start_image_generation(query: str) -> None:
     subprocesses[:] = [p for p in subprocesses if p.poll() is None]
 
     payload = f"{clean_query},True"
-    for signal_path in IMAGE_SIGNAL_PATHS:
-        try:
-            signal_path.parent.mkdir(parents=True, exist_ok=True)
-            signal_path.write_text(payload, encoding="utf-8")
-        except Exception as error:
-            log.error("Failed to write image signal file %s: %s", signal_path, error)
+    try:
+        IMAGE_SIGNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
+        IMAGE_SIGNAL_PATH.write_text(payload, encoding="utf-8")
+    except Exception as error:
+        log.error("Failed to write image signal file %s: %s", IMAGE_SIGNAL_PATH, error)
 
     try:
         process = subprocess.Popen(
@@ -440,8 +436,22 @@ def FirstThread() -> None:
                 sleep(0.5)
         except Exception as e:
             log.error("Main loop error: %s: %s", type(e).__name__, e)
-            SetAssistantStatus("Available...")
+            _safe_set_status("Available...")
             sleep(3)
+
+
+def _safe_set_status(status: str) -> None:
+    """Write Status.data with retry logic for Windows/OneDrive file locking."""
+    for attempt in range(3):
+        try:
+            with open(os.path.join(TempDirectoryPath(""), "Status.data"), "w", encoding="utf-8") as f:
+                f.write(status)
+            return
+        except PermissionError:
+            sleep(0.05)
+        except Exception as e2:
+            log.debug("Failed to write Status.data: %s", e2)
+            return
 
 
 def SecondThread() -> None:
