@@ -1,22 +1,14 @@
-Python-dotenv
-groq
-AppOpener
-Pywhatkit
-bs4
-pillow
-rich
-requests
-keyboard
-cohere
-ddgs
-duckduckgo-search
-selenium
-mtranslate
-pygame
-edge-tts
-gTTS
-PyQt5
-webdriver-manager
-Flask
-SpeechRecognition
-PyAudio
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+--only-binary=llama-cpp-python
+PyQt5==5.15.11
+numpy>=1.26,<3
+sounddevice>=0.5.6,<0.6
+webrtcvad-wheels==2.0.14
+faster-whisper==1.2.1
+llama-cpp-python==0.3.35
+pywin32>=311; sys_platform == "win32"
+pycaw==20251023; sys_platform == "win32"
+pywinauto==0.6.9; sys_platform == "win32"
+psutil>=7,<8
+pillow>=12,<13
+python-dotenv>=1.2,<2

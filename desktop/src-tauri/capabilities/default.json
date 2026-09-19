@@ -1,0 +1,11 @@
+{
+  "identifier": "main-desktop",
+  "description": "Local window controls and user-selected file dialogs.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open"
+  ]
+}

@@ -1,0 +1,27 @@
+[package]
+name = "jarvis-desktop"
+version = "1.0.0"
+description = "An independent voice assistant for your desktop"
+authors = ["Tatheer"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-global-shortcut = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["sync", "time"] }
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.55"
+
+[profile.release]
+strip = true
+opt-level = "s"
+codegen-units = 1
+lto = "thin"

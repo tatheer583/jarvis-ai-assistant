@@ -47,3 +47,19 @@ Frontend/Files/*.data
 .idea/
 Thumbs.db
 .DS_Store
+
+# Personal security templates & logs
+Data/Security/
+
+
+# Tauri and verification output
+desktop/node_modules/
+desktop/src-tauri/target/
+desktop/src-tauri/gen/
+artifacts/
+.build-tools/
+
+.pytest_cache/
+data/voice/
+voice/
+owner-security/
