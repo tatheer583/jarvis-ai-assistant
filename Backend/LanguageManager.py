@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 _current_mode = "english"
 
 URDU_SWITCH_PHRASES = {"urdu mode", "switch to urdu", "urdu mein baat karo"}
@@ -28,3 +30,16 @@ def detect_mode_switch(query: str):
     if normalized in ENGLISH_SWITCH_PHRASES or "english mode" in normalized:
         return "english"
     return None
+
+
+def get_whisper_language() -> str | None:
+    """BCP-47 / Whisper language code, or None for auto-detect."""
+    return "ur" if _current_mode == "urdu" else None
+
+
+def get_tts_voice(default_voice: str) -> str:
+    """Edge TTS voice for the active language mode."""
+    if _current_mode == "urdu":
+        return "ur-PK-UzmaNeural"
+    return default_voice
+

@@ -1,142 +1,46 @@
+# Jarvis Local Desktop
 
-<p align="center">
-  <img src="https://img.shields.io/github/stars/tatheer583/jarvis-ai-assistant?style=social" alt="GitHub stars">
-  <img src="https://img.shields.io/github/forks/tatheer583/jarvis-ai-assistant?style=social" alt="GitHub forks">
-  <img src="https://img.shields.io/github/license/tatheer583/jarvis-ai-assistant" alt="License">
-  <img src="https://img.shields.io/badge/Python-3.8%2B-blue.svg" alt="Python Version">
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
-</p>
+Jarvis is an existing Windows desktop assistant built with Tauri, React, TypeScript and a local Python engine. Core commands do not require an API key. Local Whisper speech recognition and local Qwen chat need their model files installed first.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/tatheer583/jarvis-ai-assistant/main/Data/jarvis_banner.png" alt="Jarvis AI Banner" width="600">
-</p>
+Launch the existing packaged release with `Launch-Jarvis.cmd`. Keep its `engine` directory beside `jarvis-desktop.exe`. See [desktop/README.md](desktop/README.md) for building and testing a staged release.
 
-# Jarvis AI Assistant
+## Implemented capabilities
 
-A comprehensive, AI-powered personal assistant framework designed to streamline workflows through intelligent automation, natural language processing, and multi-modal interactions.
+- Voice activation and typed commands; Ctrl+Alt+J activates listening.
+- Applications, keyboard shortcuts, typing, mouse, mouse grid, windows and volume.
+- Create, copy, move, rename and recycle files; destructive commands request confirmation.
+- Filename search, local notes, one-time reminders and activity history.
+- Offline speech with installed Windows voices; optional local reference-voice worker requires separate setup and an explicitly provided recording.
+- Local chat through the existing llama-cpp adapter when its model is present.
+- Ctrl+Alt+Esc cancels queued work, requests cooperative cancellation and pauses listening.
 
-## Overview
+Phase 1 adds validated configuration, a centralized policy boundary, registered tools, task and cancellation metadata, a separate audit database, and AI provider contracts. Tauri and the PyQt fallback share the runtime service.
 
-Jarvis integrates cutting-edge AI technologies to provide a unified platform for conversational AI, content generation, real-time information retrieval, browser automation, and speech processing. Built with a modular architecture for extensibility and maintainability.
+## Current security limits
 
-## Key Features
+The desktop still uses the existing local control mode. **Owner authentication is not configured.** Anyone who can interact with the unlocked Windows session or microphone can issue supported commands. Confirmation is not authentication. The new strict permission policy is a foundation for Phase 2; there is no active owner/guest sign-in flow yet.
 
-- **Conversational AI**: Intelligent chatbot powered by advanced language models with context-aware responses
-- **Generative AI**: AI-driven image generation from textual descriptions
-- **Voice Processing**: 
-  - Speech-to-Text: Convert audio input to text with high accuracy
-  - Text-to-Speech: Natural-sounding speech synthesis
-- **Web Intelligence**: Real-time search engine integration for current information retrieval
-- **Browser Automation**: Automate complex web-based workflows and interactions
-- **Remote Access**: Secure remote control capabilities for distributed operations
-- **Multi-Language Support**: Seamless language detection and switching
-- **Task Automation**: General-purpose automation engine for repetitive tasks
+Raw keyboard/mouse access can manipulate other applications. This is not a sandbox against malicious code running as your Windows user. Do not use ordinary chat history, notes or settings as a password vault.
 
-## Project Structure
-
-```
-Jarvis/
-├── Backend/           # Core business logic and API implementations
-├── Frontend/          # User interface and visualization components
-├── Data/              # Configuration and data storage
-├── Main.py            # Application entry point
-├── Requirements.txt   # Python dependencies
-└── README.md          # Project documentation
-```
-
-## Installation
-
-### Prerequisites
-- Python 3.8 or higher
-- pip (Python package manager)
-- Chrome/Chromium browser (for browser automation features)
-- Microphone access (for speech-to-text functionality)
-
-### Setup Steps
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd Jarvis
-   ```
-
-2. Create and activate a virtual environment (recommended):
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate  # On Windows
-   # or
-   source .venv/bin/activate  # On macOS/Linux
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r Requirements.txt
-   ```
-
-## Getting Started
-
-### Running the Application
-- **GUI Mode** (Recommended for most users):
-  ```bash
-  python Frontend/GUI.py
-  ```
-
-- **CLI Mode** (For developers and automation):
-  ```bash
-  python Main.py
-  ```
-
-### Using Specific Modules
-Each backend module can be imported and used independently:
-```python
-from Backend.Chatbot import Chatbot
-from Backend.ImageGenration import ImageGenerator
-from Backend.SpeechToText import SpeechToText
-```
-
-## Configuration
-
-- Review configuration files in the `Data/` directory
-- Update language preferences in `Backend/LanguageManager.py`
-- Customize automation rules in `Backend/Automation.py`
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Missing dependencies | Run `pip install -r Requirements.txt` and verify installation |
-| Python version error | Ensure Python 3.8+ is installed: `python --version` |
-| Browser automation fails | Install Chrome/Chromium and verify `chromedriver` compatibility |
-| Speech features unavailable | Check microphone/speaker connectivity and permissions |
-| Port conflicts | Modify port settings in configuration files if running remote access |
+The separate security audit stores allowlisted metadata with Windows user/SYSTEM directory permissions. Existing conversation history and notes remain in the original local SQLite database. Audit records are not tamper-proof against the same Windows account.
 
 ## Development
 
-### Running Tests
-```bash
-python debug_groq.py
+Use Python 3.11 on Windows, the packages declared in `Requirements.txt`, Node/npm, Rust's MSVC toolchain and the Tauri Windows build prerequisites. Optional speech-worker requirements are separate in `Requirements.voice.txt`. The existing build uses a Python runtime at `%LOCALAPPDATA%\Jarvis\runtime`.
+
+```powershell
+& "$env:LOCALAPPDATA\Jarvis\runtime\Scripts\python.exe" -B -m unittest discover -s scripts/tests -q
+& "$env:LOCALAPPDATA\Jarvis\runtime\Scripts\python.exe" -B scripts/smoke_engine.py
 ```
 
-### Code Quality
-- Follow PEP 8 style guidelines
-- Include docstrings for all functions
-- Test new features before submission
+`python Main.py` starts the PyQt fallback; `python Main.py --check` reports local setup. Tauri uses `Main.py --engine` over JSON lines, with no listening network server.
 
-## Contributing
+Model downloads are an explicit setup action and need internet. Browser search opens the configured search website and also needs internet. Core deterministic commands keep working without models or network.
 
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Commit your changes (`git commit -am 'Add improvement'`)
-4. Push to the branch (`git push origin feature/improvement`)
-5. Submit a Pull Request
+There is no active cloud AI adapter, remote approval, owner authentication, camera/emotion pipeline, autonomous browser agent or image generator in this desktop runtime. The older isolated `Backend/Security` module and its tests are retained, but do not authenticate desktop actions.
 
-## License
+[Architecture and limits](docs/architecture.md) Â· [Cleanup record](docs/cleanup-manifest.md) Â· [Build instructions](desktop/README.md)
 
-[Add your license information here]
+Verified Phase 1 build: run `Launch-Jarvis-Phase1.cmd`. See [validation report](docs/phase1-validation.md).
 
-## Support
-
-For issues, feature requests, or questions:
-- Open an issue on the GitHub repository
-- Check existing documentation in the `Data/` directory
+The current Phase 1 launcher includes the [voice and search fixes](docs/voice-and-search-fixes.md).
