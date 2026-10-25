@@ -61,6 +61,22 @@ if ($LASTEXITCODE -ne 0) { throw "Could not update pip." }
 & $PythonExe -m pip install -r (Join-Path $Project "Requirements.txt")
 if ($LASTEXITCODE -ne 0) { throw "Installing Jarvis dependencies failed. Check your internet connection and try again." }
 
+# PyQt5 bundles a 2020-era Visual C++ runtime next to its Qt binaries. When the
+# GUI loads Qt before the speech stack, that old MSVCP140.dll wins process-wide
+# and crashes ctranslate2/onnxruntime with 0xc0000005. Replace the bundled
+# copies with the system runtime when the system one is newer.
+$qtBin = Join-Path $Runtime "Lib\site-packages\PyQt5\Qt5\bin"
+if (Test-Path -LiteralPath $qtBin) {
+    foreach ($name in @("msvcp140.dll", "msvcp140_1.dll", "msvcp140_2.dll", "msvcp140_atomic_wait.dll",
+                        "msvcp140_codecvt_ids.dll", "vcruntime140.dll", "vcruntime140_1.dll")) {
+        $systemCopy = Join-Path $env:SystemRoot "System32\$name"
+        $qtCopy = Join-Path $qtBin $name
+        if ((Test-Path -LiteralPath $systemCopy) -and (Test-Path -LiteralPath $qtCopy)) {
+            Copy-Item -LiteralPath $systemCopy -Destination $qtCopy -Force
+        }
+    }
+}
+
 if ($Voice) {
     & $PythonExe -m pip install -r (Join-Path $Project "Requirements.voice.txt")
     if ($LASTEXITCODE -ne 0) { throw "Installing the optional personal-voice engine failed." }
