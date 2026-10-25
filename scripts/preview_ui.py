@@ -4,6 +4,10 @@ import sys
 import tempfile
 from pathlib import Path
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
+# The offscreen platform cannot discover the Windows font directory by itself;
+# without this it renders previews with no text at all.
+if os.name == "nt":
+    os.environ.setdefault("QT_QPA_FONTDIR", os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from PyQt5.QtWidgets import QApplication
 from Backend.Config import Config, data_directory
