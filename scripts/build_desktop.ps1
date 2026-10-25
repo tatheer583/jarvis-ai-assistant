@@ -1,21 +1,27 @@
 $ErrorActionPreference = "Stop"
 $Project = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $Python = Join-Path $env:LOCALAPPDATA "Jarvis/runtime/Scripts/python.exe"
-$BuildRoot = Join-Path $env:LOCALAPPDATA "Jarvis/build/frontend"
-$Target = Join-Path $env:LOCALAPPDATA "Jarvis/build/target"
-if (-not (Test-Path -LiteralPath $Python)) { throw "Local Python runtime missing. See desktop/README.md." }
+# Low-disk machines can redirect every large build output with environment
+# variables; unset values keep the historical %LOCALAPPDATA%\Jarvis\build layout.
+$BuildBase = if ($env:JARVIS_BUILD_ROOT) { $env:JARVIS_BUILD_ROOT } else { Join-Path $env:LOCALAPPDATA "Jarvis/build" }
+$BuildRoot = Join-Path $BuildBase "frontend"
+$Target = Join-Path $BuildBase "target"
+$EngineDist = if ($env:JARVIS_ENGINE_DIST) { $env:JARVIS_ENGINE_DIST } else { Join-Path $Project "dist" }
+if (-not (Test-Path -LiteralPath $Python)) { throw "Local Python runtime missing. Run scripts/setup_local.ps1 first." }
 Push-Location $Project
 try {
     & $Python -B -m unittest discover -s scripts/tests -q
     if ($LASTEXITCODE -ne 0) { throw "Python validation failed." }
     & $Python -B (Join-Path $Project "scripts/smoke_engine.py")
     if ($LASTEXITCODE -ne 0) { throw "Source engine smoke check failed." }
-    & $Python -m PyInstaller --noconfirm (Join-Path $Project "jarvis-engine.spec")
+    & $Python -m PyInstaller --noconfirm --distpath $EngineDist (Join-Path $Project "jarvis-engine.spec")
     if ($LASTEXITCODE -ne 0) { throw "Offline engine packaging failed." }
     & $Python (Join-Path $Project "scripts/sync_desktop.py")
     if ($LASTEXITCODE -ne 0) { throw "Desktop source synchronization failed." }
-    $env:PATH = (Join-Path $env:USERPROFILE ".rustup/toolchains/stable-x86_64-pc-windows-msvc/bin") + ";" + $env:PATH
-    $env:CARGO_TARGET_DIR = $Target
+    if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
+        $env:PATH = (Join-Path $env:USERPROFILE ".rustup/toolchains/stable-x86_64-pc-windows-msvc/bin") + ";" + $env:PATH
+    }
+    if ($env:CARGO_TARGET_DIR) { $Target = $env:CARGO_TARGET_DIR } else { $env:CARGO_TARGET_DIR = $Target }
     $env:JARVIS_PROJECT_DIR = $Project
     Push-Location $BuildRoot
     try {
@@ -27,7 +33,7 @@ try {
         npm.cmd run tauri -- build --no-bundle
         if ($LASTEXITCODE -ne 0) { throw "Tauri build failed." }
     } finally { Pop-Location }
-    & $Python -B (Join-Path $Project "scripts/smoke_engine.py") --executable (Join-Path $Project "dist/jarvis-engine/jarvis-engine.exe")
+    & $Python -B (Join-Path $Project "scripts/smoke_engine.py") --executable (Join-Path $EngineDist "jarvis-engine/jarvis-engine.exe")
     if ($LASTEXITCODE -ne 0) { throw "Packaged engine smoke check failed; original release preserved." }
     & $Python (Join-Path $Project "scripts/stage_desktop.py")
     if ($LASTEXITCODE -ne 0) { throw "Application staging failed." }
