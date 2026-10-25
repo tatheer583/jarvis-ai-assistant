@@ -10,6 +10,7 @@ export interface Settings {
   user_name: string; language: string; wake_word: string; require_wake_word: boolean;
   microphone_device: number | null; voice_id: string; voice_rate: number; voice_volume: number;
   speech_enabled: boolean; voice_provider: string; vad_aggressiveness: number;
+  minimum_speech_ms: number; web_search_engine: string; llm_threads: number;
   listen_on_startup: boolean; start_with_windows: boolean; close_to_tray: boolean;
   search_roots: string[]; aliases: Record<string, string>; whisper_path: string; llm_path: string;
 }
@@ -33,6 +34,7 @@ export const defaults: Snapshot = {
   settings: { voice_consent: false, voice_model_config: '', voice_python: '', voice_startup: true, assistant_name: 'Jarvis', owner_email: '', silence_ms: 850, audit_retention_days: 90, user_name: 'You', language: 'auto', wake_word: 'jarvis', require_wake_word: true,
     microphone_device: null, voice_id: '', voice_rate: 0, voice_volume: 90, speech_enabled: true,
     voice_reference: '', voice_provider: 'windows', vad_aggressiveness: 2, listen_on_startup: true, start_with_windows: false,
+    minimum_speech_ms: 350, web_search_engine: 'google', llm_threads: 2,
     close_to_tray: true, search_roots: [], aliases: {}, whisper_path: '', llm_path: '' },
   status: 'Connecting to your local assistant…', listening: false, busy: false, speaking: false,
   speech_ready: false, chat_ready: false, index_count: 0, indexing: false,

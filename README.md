@@ -26,7 +26,12 @@ The separate security audit stores allowlisted metadata with Windows user/SYSTEM
 
 ## Development
 
-Use Python 3.11 on Windows, the packages declared in `Requirements.txt`, Node/npm, Rust's MSVC toolchain and the Tauri Windows build prerequisites. Optional speech-worker requirements are separate in `Requirements.voice.txt`. The existing build uses a Python runtime at `%LOCALAPPDATA%\Jarvis\runtime`.
+Use Python 3.11 on Windows, the packages declared in `Requirements.txt`, Node/npm, Rust's MSVC toolchain and the Tauri Windows build prerequisites. Optional speech-worker requirements are separate in `Requirements.voice.txt`. The existing build uses a Python runtime at `%LOCALAPPDATA%\Jarvis\runtime`, created by the one-time setup script:
+
+```powershell
+powershell -File scripts\setup_local.ps1          # engine + desktop dependencies
+powershell -File scripts\setup_local.ps1 -Voice   # also the optional personal-voice engine
+```
 
 ```powershell
 & "$env:LOCALAPPDATA\Jarvis\runtime\Scripts\python.exe" -B -m unittest discover -s scripts/tests -q
@@ -41,6 +46,4 @@ There is no active cloud AI adapter, remote approval, owner authentication, came
 
 [Architecture and limits](docs/architecture.md) Â· [Cleanup record](docs/cleanup-manifest.md) Â· [Build instructions](desktop/README.md)
 
-Verified Phase 1 build: run `Launch-Jarvis-Phase1.cmd`. See [validation report](docs/phase1-validation.md).
-
-The current Phase 1 launcher includes the [voice and search fixes](docs/voice-and-search-fixes.md).
+The Phase 1 validation history is in [docs/phase1-validation.md](docs/phase1-validation.md); its timestamped staging launcher was removed because staged builds are not committed to the repository. Run `scripts\build_desktop.ps1` to produce a new staged build, or see the [voice and search fixes](docs/voice-and-search-fixes.md) notes.

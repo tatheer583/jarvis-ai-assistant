@@ -16,7 +16,7 @@ The Phase 1 staged application omits the redundant external frontend copy becaus
 - Existing models and Python runtime; optional voice-worker packages are not removed from the user's environment.
 - `.env`: never read for values or erased in this cleanup; the isolated legacy security configuration still has dotenv support.
 - `Backend/Security/`, its enrollment script and tests: isolated legacy subsystem; not wired to desktop authorization.
-- BrowserAutomation, LanguageManager, StatusIO and compatibility modules: retained until their individual consumers can be retired with verified replacements.
+- `Backend/BrowserAutomation.py` (imported `selenium`, which `Requirements.txt` never declared) and `Backend/StatusIO.py` (wrote the obsolete `Frontend/Files/Status.data` status file): removed after a consumer scan found no imports of either module.
 - Existing launchers, graphics, `artifacts/Jarvis` and original executables.
 - Build/package lockfiles and reproducibility scripts.
 

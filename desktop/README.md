@@ -12,7 +12,7 @@ Ctrl+Alt+J activates voice. Ctrl+Alt+Esc requests cancellation, clears pending c
 
 Use Windows, Python 3.11 with `Requirements.txt` plus PyInstaller, Node/npm, Rust stable MSVC, Visual Studio C++ build tools and WebView2. These tools were already present in the inspected environment; the build script does not silently install system tools. The existing source and package lockfiles remain authoritative. No new Python/npm/Cargo dependency was added for Phase 1.
 
-The script expects Python at `%LOCALAPPDATA%\Jarvis\runtime\Scripts\python.exe`. It synchronizes repository sources into the existing local build cache outside OneDrive, performs the tests, packages Python, builds Tauri and writes a new timestamped directory under `artifacts/staging`.
+The script expects Python at `%LOCALAPPDATA%\Jarvis\runtime\Scripts\python.exe`, created once by `powershell -File scripts\setup_local.ps1`. It synchronizes repository sources into the existing local build cache outside OneDrive, performs the tests, packages Python, builds Tauri and writes a new timestamped directory under `artifacts/staging`.
 
 ```powershell
 powershell -File scripts/build_desktop.ps1
@@ -41,4 +41,4 @@ The UI truthfully reports local control with owner authentication unconfigured. 
 
 Whisper and Qwen load locally when requested. Optional reference voice synthesis uses the existing separate local Python worker; its heavyweight packages are excluded from the engine bundle. A packaged build therefore needs that separately configured runtime for this optional voice mode.
 
-Verified Phase 1 build: run `Launch-Jarvis-Phase1.cmd`. See [validation report](../docs/phase1-validation.md).
+The historical Phase 1 validation report is at [../docs/phase1-validation.md](../docs/phase1-validation.md). Its timestamped staging launcher (`Launch-Jarvis-Phase1.cmd`) was removed because staged builds live outside the repository; build and validate a fresh staging release instead.
