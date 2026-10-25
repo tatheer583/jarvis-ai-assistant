@@ -28,6 +28,7 @@ from Backend.AIProviders import AIOrchestrator, LocalProvider
 log = logging.getLogger("Jarvis")
 HELP = """Try these commands:
 • Open downloads / open notepad / open file budget.xlsx
+• Open YouTube / open google / open github / play lofi study music
 • Find PDF invoice / find folder project / open C:\\Users\\...
 • Close notepad / close budget.xlsx / list windows
 • Search for Python tutorials / search YouTube for relaxing music

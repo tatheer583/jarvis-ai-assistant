@@ -1,5 +1,7 @@
 export const guide: { category: string; title: string; command: string; detail: string }[] = [
   {category:'Apps & windows', title:'Open an app', command:'open notepad', detail:'Launch installed Windows apps by name.'},
+  {category:'Apps & windows', title:'Open a website', command:'open youtube', detail:'Also google, github, gmail, whatsapp and any address like example.com.'},
+  {category:'Apps & windows', title:'Play music or a video', command:'play lofi study music', detail:'Opens YouTube search results for what you name.'},
   {category:'Apps & windows', title:'Switch to a window', command:'focus Chrome', detail:'Bring a matching app to the front.'},
   {category:'Apps & windows', title:'Arrange your workspace', command:'snap left current window', detail:'Also try maximize, minimize, restore, or snap right.'},
   {category:'Apps & windows', title:'Close a window', command:'close notepad', detail:'Windows keeps the app’s normal save prompt.'},

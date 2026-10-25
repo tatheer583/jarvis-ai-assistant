@@ -19,7 +19,10 @@ NUMBER_WORDS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4, "fiv
 def clean(text: str, *, strip_punctuation: bool = True) -> str:
     text = " ".join(text.strip().split())
     text = re.sub(r"^(?:hey\s+)?(?:jarvis|jarvise|jarvice|جاروس|جارویس)[,\s:!]*", "", text, flags=re.I)
-    text = re.sub(r"^(?:please|can you|could you|would you|براہ کرم)\s+", "", text, flags=re.I)
+    # Polite question forms are requests: "can you open X" and "are you able to
+    # open X" both mean the user wants X opened, exactly like "open X".
+    text = re.sub(r"^(?:please|can you|could you|would you|will you|are you able to|"
+                  r"do you know how to|is it possible to|براہ کرم)\s+", "", text, flags=re.I)
     return text.strip().rstrip(".?!۔؟") if strip_punctuation else text.strip()
 
 def parse_command(text: str) -> Command:

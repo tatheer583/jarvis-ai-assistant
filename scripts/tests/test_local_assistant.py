@@ -177,5 +177,19 @@ class LocalTests(unittest.TestCase):
             self.config.update({"voice_rate": 90})
         self.assertEqual(self.config.settings.voice_rate, 3)
 
+    def test_capability_questions_get_a_deterministic_yes(self):
+        brain = LocalBrain(self.config)
+        for phrase in ("i ask you are you able to perform this task open youtube and play videos",
+                       "are you able to perform this task",
+                       "I want to know, can you open websites like youtube?",
+                       "do you know how to play videos?"):
+            with patch("socket.socket.connect", side_effect=AssertionError("No network allowed")):
+                reply = brain.reply(phrase)
+            self.assertTrue(reply.startswith("Yes."), phrase)
+            self.assertIn("open YouTube", reply)
+        # Ordinary conversation is not intercepted by the capability answer.
+        with self.assertRaises(ModelUnavailable):
+            brain.reply("tell me about the history of music")
+
 if __name__ == "__main__":
     unittest.main()
